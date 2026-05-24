@@ -1,11 +1,22 @@
 package fiap._tdspo.clyvoHelper.clyvoHelper.dto;
 
 import fiap._tdspo.clyvoHelper.clyvoHelper.entity.Animal;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
 
 public class AnimalDto {
+    @NotBlank(message = "Não deixe o nome do animal em vazio!")
     private String nome;
+
+    @NotBlank(message = "Não deixe a especie do animal em vazio!")
     private String especie;
+
+    @NotBlank(message = "Não deixe a idade do animal em vazio!")
+    @Min(value = 0, message = "Não insira valores negativos para a idade do animal!")
     private Integer idade;
+
+    @NotBlank(message = "Não deixe o peso do animal em vazio!")
+    @Min(value = 0, message = "Não insira valores negativos para o peso do animal!")
     private Double peso;
 
     public String getNome() {

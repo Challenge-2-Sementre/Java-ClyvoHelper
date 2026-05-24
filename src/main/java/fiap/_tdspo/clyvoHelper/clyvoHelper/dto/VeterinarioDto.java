@@ -1,10 +1,14 @@
 package fiap._tdspo.clyvoHelper.clyvoHelper.dto;
 
 import fiap._tdspo.clyvoHelper.clyvoHelper.entity.Veterinario;
+import jakarta.validation.constraints.NotBlank;
 
 public class VeterinarioDto {
+
+    @NotBlank(message = "Insira o nome do veterinario")
     private String nome;
 
+    @NotBlank(message = "Insira a especialidade do veterinario")
     private String especialidade;
 
     public String getNome() {

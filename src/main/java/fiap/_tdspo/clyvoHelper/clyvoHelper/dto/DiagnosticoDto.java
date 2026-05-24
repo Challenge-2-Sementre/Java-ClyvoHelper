@@ -1,13 +1,22 @@
 package fiap._tdspo.clyvoHelper.clyvoHelper.dto;
 
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+
 public class DiagnosticoDto {
 
+    @NotBlank(message = "Insira a especie do animal!")
     private String especie;
 
+    @NotBlank(message = "Insira a idade do animal!")
+    @Min(value = 0, message = "Não insira valores negativos para a idade do animal!")
     private Integer idade;
 
+    @NotBlank(message = "Insira o peso do animal!")
+    @Min(value = 0, message = "Não insira valores negativos para o peso do animal!")
     private Double peso;
 
+    @NotBlank(message = "Insira os sintomas do animal!")
     private String sintomas;
 
     public String getEspecie() {

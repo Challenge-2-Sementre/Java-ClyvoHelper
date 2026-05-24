@@ -3,16 +3,20 @@ package fiap._tdspo.clyvoHelper.clyvoHelper.dto;
 import fiap._tdspo.clyvoHelper.clyvoHelper.entity.Agendamento;
 import fiap._tdspo.clyvoHelper.clyvoHelper.entity.Animal;
 import fiap._tdspo.clyvoHelper.clyvoHelper.entity.Veterinario;
-import jakarta.persistence.ManyToOne;
+import jakarta.validation.constraints.FutureOrPresent;
+import jakarta.validation.constraints.NotBlank;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 public class AgendamentoDto {
+    @NotBlank(message = "A data não pode ser vazia!")
+    @FutureOrPresent(message = "Não insira valores no passado para a data!")
     private LocalDate data;
 
+    @NotBlank(message = "Envie o id do animal!")
     private Long  animalId;
 
+    @NotBlank(message = "Envie o id do veterinario!")
     private Long veterinarioId;
 
     public LocalDate getData() {
