@@ -9,7 +9,8 @@ import java.util.List;
 
 public interface AgendamentoRepository extends JpaRepository<Agendamento, Long> {
 
-   // List<Agendamento> findByVeterinarioIdAndData(Long veterinarioId, LocalDate data);
-
-    List<Agendamento> findByVeterinarioIdAndDataHoraBetween(Long veterinarioId, LocalDateTime inicio, LocalDateTime fim);
+    boolean existsByVeterinarioIdAndData(
+            Long veterinarioId,
+            LocalDate data
+    );
 }

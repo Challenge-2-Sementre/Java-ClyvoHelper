@@ -5,21 +5,22 @@ import fiap._tdspo.clyvoHelper.clyvoHelper.entity.Animal;
 import fiap._tdspo.clyvoHelper.clyvoHelper.entity.Veterinario;
 import jakarta.persistence.ManyToOne;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 public class AgendamentoDto {
-    private LocalDateTime dataHora;
+    private LocalDate data;
 
     private Long  animalId;
 
     private Long veterinarioId;
 
-    public LocalDateTime getDataHora() {
-        return dataHora;
+    public LocalDate getData() {
+        return data;
     }
 
-    public void setDataHora(LocalDateTime dataHora) {
-        this.dataHora = dataHora;
+    public void setData(LocalDate data) {
+        this.data = data;
     }
 
     public Long getAnimalId() {
@@ -40,7 +41,7 @@ public class AgendamentoDto {
 
     public Agendamento toAgendamento(Animal animal, Veterinario veterinario) {
         Agendamento agendamento = new Agendamento();
-        agendamento.setDataHora(dataHora);
+        agendamento.setData(data);
         agendamento.setAnimal(animal);
         agendamento.setVeterinario(veterinario);
         return agendamento;

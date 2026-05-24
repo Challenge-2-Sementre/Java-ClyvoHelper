@@ -2,6 +2,7 @@ package fiap._tdspo.clyvoHelper.clyvoHelper.entity;
 
 import jakarta.persistence.*;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 
@@ -12,7 +13,7 @@ public class Agendamento {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private LocalDateTime dataHora;
+    private LocalDate data;
 
     @ManyToOne
     private Animal animal;
@@ -28,14 +29,6 @@ public class Agendamento {
         this.id = id;
     }
 
-    public LocalDateTime getDataHora() {
-        return dataHora;
-    }
-
-    public void setDataHora(LocalDateTime dataHora) {
-        this.dataHora = dataHora;
-    }
-
     public Animal getAnimal() {
         return animal;
     }
@@ -46,6 +39,14 @@ public class Agendamento {
 
     public Veterinario getVeterinario() {
         return veterinario;
+    }
+
+    public LocalDate getData() {
+        return data;
+    }
+
+    public void setData(LocalDate data) {
+        this.data = data;
     }
 
     public void setVeterinario(Veterinario veterinario) {

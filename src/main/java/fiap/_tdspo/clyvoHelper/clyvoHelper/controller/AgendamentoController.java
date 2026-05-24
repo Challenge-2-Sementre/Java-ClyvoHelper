@@ -37,11 +37,7 @@ public class AgendamentoController {
     public List<LocalDate> horariosDisponiveis(
             @RequestParam Long veterinarioId
     ) {
-
-        return agendamentoService
-                .buscarHorariosDisponiveis(
-                        veterinarioId
-                );
+        return agendamentoService.buscarDatasDisponiveis(veterinarioId);
     }
 
     @PostMapping
