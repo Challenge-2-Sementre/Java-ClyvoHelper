@@ -34,6 +34,18 @@ public class AnimalController {
     }
 
     @Operation(
+            summary = "Atualizar animal",
+            description = "Atualiza os dados de um animal no sistema veterinario"
+    )
+    @PutMapping
+    public ResponseEntity<Animal> updateAnimal(@RequestBody Animal animal) {
+        if(animalRepository.findById(animal.getId()).isPresent()) {
+            return ResponseEntity.ok(animalRepository.save(animal));
+        }
+        return ResponseEntity.notFound().build();
+    }
+
+    @Operation(
             summary = "Listar animais",
             description = "Retorna uma lista paginada de animais cadastrados"
     )
