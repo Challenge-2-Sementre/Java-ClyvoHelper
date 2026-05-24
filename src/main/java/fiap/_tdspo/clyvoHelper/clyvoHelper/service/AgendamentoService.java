@@ -41,22 +41,26 @@ public class AgendamentoService {
             LocalDate data
     ) {
 
-        List<Veterinario> todosVeterinarios =
-                veterinarioRepository.findAll();
+        try{
+            List<Veterinario> todosVeterinarios =
+                    veterinarioRepository.findAll();
 
-        return todosVeterinarios.stream()
-                .filter(veterinario -> {
+            return todosVeterinarios.stream()
+                    .filter(veterinario -> {
 
-                    boolean ocupado =
-                            agendamentoRepository
-                                    .existsByVeterinarioIdAndData(
-                                            veterinario.getId(),
-                                            data
-                                    );
+                        boolean ocupado =
+                                agendamentoRepository
+                                        .existsByVeterinarioIdAndData(
+                                                veterinario.getId(),
+                                                data
+                                        );
 
-                    return !ocupado;
-                })
-                .toList();
+                        return !ocupado;
+                    })
+                    .toList();
+        }catch (Exception e){
+            throw new RuntimeException(e);
+        }
     }
 
     @Cacheable("horariosDisponiveis")
@@ -64,29 +68,33 @@ public class AgendamentoService {
             Long veterinarioId
     ) {
 
-        LocalDate hoje = LocalDate.now();
+        try {
+            LocalDate hoje = LocalDate.now();
 
-        List<LocalDate> datasDisponiveis =
-                new ArrayList<>();
+            List<LocalDate> datasDisponiveis =
+                    new ArrayList<>();
 
-        for (int i = 0; i < 14; i++) {
+            for (int i = 0; i < 14; i++) {
 
-            LocalDate data = hoje.plusDays(i);
+                LocalDate data = hoje.plusDays(i);
 
-            boolean ocupado =
-                    agendamentoRepository
-                            .existsByVeterinarioIdAndData(
-                                    veterinarioId,
-                                    data
-                            );
+                boolean ocupado =
+                        agendamentoRepository
+                                .existsByVeterinarioIdAndData(
+                                        veterinarioId,
+                                        data
+                                );
 
-            if (!ocupado) {
-                datasDisponiveis.add(data);
+                if (!ocupado) {
+                    datasDisponiveis.add(data);
+                }
             }
-        }
 
-        return datasDisponiveis;
-    }
+            return datasDisponiveis;
+        }catch (Exception e){
+            throw new RuntimeException(e);
+        }
+        }
 
     @CacheEvict(
             value = {
@@ -98,45 +106,41 @@ public class AgendamentoService {
     public Agendamento criarAgendamento(
             AgendamentoDto dto
     ) {
+        try {
+            boolean jaExiste =
+                    agendamentoRepository
+                            .existsByVeterinarioIdAndData(
+                                    dto.getVeterinarioId(),
+                                    dto.getData()
+                            );
 
-        boolean jaExiste =
-                agendamentoRepository
-                        .existsByVeterinarioIdAndData(
-                                dto.getVeterinarioId(),
-                                dto.getData()
-                        );
+            if (jaExiste) {
 
-        if (jaExiste) {
+                throw new RuntimeException(
+                        "Veterinario ja possui agendamento nessa data"
+                );
+            }
 
-            throw new RuntimeException(
-                    "Veterinario ja possui agendamento nessa data"
-            );
+            Animal animal =
+                    animalRepository
+                            .findById(dto.getAnimalId())
+                            .orElseThrow();
+
+            Veterinario veterinario =
+                    veterinarioRepository
+                            .findById(dto.getVeterinarioId())
+                            .orElseThrow();
+
+            Agendamento agendamento =
+                    new Agendamento();
+
+            agendamento.setData(dto.getData());
+            agendamento.setAnimal(animal);
+            agendamento.setVeterinario(veterinario);
+
+            return agendamentoRepository.save(agendamento);
+        }catch (Exception e){
+            throw new RuntimeException(e);
         }
-
-        Animal animal =
-                animalRepository
-                        .findById(dto.getAnimalId())
-                        .orElseThrow();
-
-        Veterinario veterinario =
-                veterinarioRepository
-                        .findById(dto.getVeterinarioId())
-                        .orElseThrow();
-
-        Agendamento agendamento =
-                new Agendamento();
-
-        agendamento.setData(dto.getData());
-        agendamento.setAnimal(animal);
-        agendamento.setVeterinario(veterinario);
-
-        return agendamentoRepository.save(agendamento);
-    }
-
-
-    private Agendamento dtoToAgendamento(AgendamentoDto agendamentoDto) {
-        Animal animal = animalRepository.findById(agendamentoDto.getAnimalId()).get();
-        Veterinario veterinario = veterinarioRepository.findById(agendamentoDto.getVeterinarioId()).get();
-        return agendamentoDto.toAgendamento(animal,veterinario);
     }
 }

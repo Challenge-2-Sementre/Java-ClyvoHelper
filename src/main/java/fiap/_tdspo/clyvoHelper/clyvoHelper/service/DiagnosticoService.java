@@ -11,7 +11,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 
 import java.util.List;
@@ -38,75 +37,78 @@ public class DiagnosticoService {
     public DiagnosticoResponseDto gerarDiagnostico(
             DiagnosticoDto dto
     ) {
+        try {
 
-        String prompt = """
-                Voce e um veterinario.
+            String prompt = """
+                    Voce e um veterinario.
+                    
+                    Analise os dados abaixo e gere
+                    um diagnostico preliminar curto.
+                    
+                    Especie: %s
+                    Idade: %d
+                    Peso: %.2f
+                    Sintomas: %s
+                    """
+                    .formatted(
+                            dto.getEspecie(),
+                            dto.getIdade(),
+                            dto.getPeso(),
+                            dto.getSintomas()
+                    );
 
-                Analise os dados abaixo e gere
-                um diagnostico preliminar curto.
+            // call AI API here
+            AIRequest aiRequest = new AIRequest();
 
-                Especie: %s
-                Idade: %d
-                Peso: %.2f
-                Sintomas: %s
-                """
-                .formatted(
-                        dto.getEspecie(),
-                        dto.getIdade(),
-                        dto.getPeso(),
-                        dto.getSintomas()
-                );
+            aiRequest.setModel("openrouter/owl-alpha");
+            aiRequest.setMessages(
+                    List.of(
+                            new Message(
+                                    "user",
+                                    prompt
+                            )
+                    )
+            );
+            HttpHeaders headers =
+                    new HttpHeaders();
 
-        // call AI API here
-        AIRequest aiRequest = new AIRequest();
+            headers.setContentType(
+                    MediaType.APPLICATION_JSON
+            );
 
-        aiRequest.setModel("openrouter/owl-alpha");
-        aiRequest.setMessages(
-                List.of(
-                        new Message(
-                                "user",
-                                prompt
-                        )
-                )
-        );
-        HttpHeaders headers =
-                new HttpHeaders();
+            headers.setBearerAuth(apiKey);
 
-        headers.setContentType(
-                MediaType.APPLICATION_JSON
-        );
+            HttpEntity<AIRequest> entity =
+                    new HttpEntity<>(
+                            aiRequest,
+                            headers
+                    );
 
-        headers.setBearerAuth(apiKey);
+            ResponseEntity<Map> response =
+                    restTemplate.postForEntity(
+                            "https://openrouter.ai/api/v1/chat/completions",
+                            entity,
+                            Map.class
+                    );
 
-        HttpEntity<AIRequest> entity =
-                new HttpEntity<>(
-                        aiRequest,
-                        headers
-                );
+            Map body = response.getBody();
 
-        ResponseEntity<Map> response =
-                restTemplate.postForEntity(
-                        "https://openrouter.ai/api/v1/chat/completions",
-                        entity,
-                        Map.class
-                );
+            List choices =
+                    (List) body.get("choices");
 
-        Map body = response.getBody();
+            Map firstChoice =
+                    (Map) choices.get(0);
 
-        List choices =
-                (List) body.get("choices");
+            Map message =
+                    (Map) firstChoice.get("message");
 
-        Map firstChoice =
-                (Map) choices.get(0);
+            String respostaIA =
+                    (String) message.get("content");
 
-        Map message =
-                (Map) firstChoice.get("message");
-
-        String respostaIA =
-                (String) message.get("content");
-
-        return new DiagnosticoResponseDto(
-                respostaIA
-        );
-    }
+            return new DiagnosticoResponseDto(
+                    respostaIA
+            );
+        }catch (Exception e){
+            throw new RuntimeException(e);
+        }}
 }
