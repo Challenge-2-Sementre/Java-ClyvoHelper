@@ -1,12 +1,11 @@
 package fiap._tdspo.clyvoHelper.clyvoHelper.controller;
 
-import fiap._tdspo.clyvoHelper.clyvoHelper.cache.AgendamentoService;
+import fiap._tdspo.clyvoHelper.clyvoHelper.dto.AgendamentoDto;
+import fiap._tdspo.clyvoHelper.clyvoHelper.entity.Agendamento;
+import fiap._tdspo.clyvoHelper.clyvoHelper.entity.Veterinario;
+import fiap._tdspo.clyvoHelper.clyvoHelper.service.AgendamentoService;
 import fiap._tdspo.clyvoHelper.clyvoHelper.repository.AgendamentoRepository;
-import fiap._tdspo.clyvoHelper.clyvoHelper.repository.AnimalRepository;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -18,19 +17,37 @@ public class AgendamentoController {
 
     private final AgendamentoRepository agendamentoRepository;
     private AgendamentoService agendamentoService;
-    public AgendamentoController(AgendamentoRepository agendamentoRepository) {
+    public AgendamentoController(AgendamentoRepository agendamentoRepository, AgendamentoService agendamentoService) {
         this.agendamentoRepository = agendamentoRepository;
+        this.agendamentoService = agendamentoService;
     }
 
-    @GetMapping("/disponibilidade")
-    public List<LocalTime> disponibilidade(
-            @RequestParam Long veterinarioId,
+    @GetMapping("/disponibilidade/veterinarios")
+    public List<Veterinario> veterinariosDisponiveis(
             @RequestParam String data
     ) {
 
-        return agendamentoService.verificarDisponibilidade(
-                veterinarioId,
-                LocalDate.parse(data)
-        );
+        return agendamentoService
+                .buscarVeterinariosDisponiveis(
+                        LocalDate.parse(data)
+                );
+    }
+
+    @GetMapping("/disponibilidade/horarios")
+    public List<LocalDate> horariosDisponiveis(
+            @RequestParam Long veterinarioId
+    ) {
+
+        return agendamentoService
+                .buscarHorariosDisponiveis(
+                        veterinarioId
+                );
+    }
+
+    @PostMapping
+    public Agendamento criar(
+            @RequestBody AgendamentoDto agendamentoDto
+    ) {
+        return agendamentoService.criarAgendamento(agendamentoDto);
     }
 }
